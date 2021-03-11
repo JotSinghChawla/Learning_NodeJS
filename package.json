@@ -16,5 +16,6 @@
   "bugs": {
     "url": "https://github.com/JotSinghChawla/Learning_NodeJS/issues"
   },
-  "homepage": "https://github.com/JotSinghChawla/Learning_NodeJS#readme"
+  "homepage": "https://github.com/JotSinghChawla/Learning_NodeJS#readme",
+  "dependencies": {}
 }
