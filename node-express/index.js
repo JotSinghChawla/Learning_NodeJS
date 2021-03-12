@@ -6,28 +6,16 @@ const bodyParser = require('body-parser');
 const hostname = 'localhost';
 const port = 3000;
 const dishRouter = require('./routes/dishRouter');
+const promoRouter = require('./routes/promoRouter');
+const leaderRouter = require('./routes/leaderRouter');
 
 const app = express();
 app.use(morgan('dev'));
 app.use(bodyParser.json());
 
 app.use('/dishes', dishRouter);
-
-app.get('/dishes/:dishId', (req,res) => {
-    res.end('THis is a Dishes Database static with Specifix Dish: ' + req.params.dishId);
-}); 
-app.post('/dishes/:dishId', (req,res) => {
-    res.statusCode = 403;
-    res.end('POST operation is not supported on /dishes/' + req.params.dishId );
-}); 
-app.put('/dishes/:dishId', (req,res) => {
-    res.write('Updating the dish: ' + req.params.dishId );
-    res.end('Will UPDATE your single dish request in dishes: '+ req.body.name + ' => ' +  req.body.description );
-}); 
-app.delete('/dishes/:dishId', (req,res) => {
-    res.end('Deleting the Single Dish! with id = ' + req.params.dishId );
-}); 
-
+app.use('/promotions', promoRouter);
+app.use('/leaders', leaderRouter);
 
 app.use(express.static(__dirname+'/public'));
 
