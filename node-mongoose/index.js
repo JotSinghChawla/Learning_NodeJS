@@ -19,7 +19,7 @@ connect.then( (db) => {
             return Dishes.find({}).exec();
         })
         .then( (dishes) => {
-            console.log(dishes);
+            console.log('Founded: ',dishes);
 
             return Dishes.remove({});
         })
@@ -27,6 +27,6 @@ connect.then( (db) => {
             return mongoose.connection.close();
         })
         .catch( (err) => {
-            console.log(err);
+            console.log('Error: ',err);
         });
 });
