@@ -7,12 +7,17 @@ const connect = mongoose.connect(url);
 connect.then( (db) => {
     console.log('We are Connected to the Server');
 
-    var newDish = Dishes({
-        name: 'Vadonut',
-        description: 'This is a Test'
-    });
+    // var newDish = Dishes({
+    //     name: 1,
+    //     description: 'This is a Test'
+    // });
 
-    newDish.save()
+    Dishes.create({
+            name: 1,
+            description: 'This is a Test'
+        })
+
+    // newDish.save()
         .then( (dish) => {
             console.log(dish);
 
@@ -21,7 +26,7 @@ connect.then( (db) => {
         .then( (dishes) => {
             console.log('Founded: ',dishes);
 
-            return Dishes.remove({});
+            return Dishes.deleteMany({});
         })
         .then( () => {
             return mongoose.connection.close();
