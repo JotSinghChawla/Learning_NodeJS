@@ -38,7 +38,7 @@ dishRouter.route('/')
 })
 
 .delete( (req,res) => {
-    Dishes.remove({})
+    Dishes.deleteMany({})
         .then( (response) => {
             res.statusCode = 200;
             res.setHeader('Content-type', 'application/json');
@@ -73,7 +73,8 @@ dishRouter.route('/:dishId')
     Dishes.findByIdAndUpdate(req.params.dishId, {
         $set: req.body
     }, {
-        new: true               //  So that it returns the Updated dish as a JSON string in the reply
+        new: true,                            //  So that it returns the Updated dish as a JSON string in the reply
+        useFindAndModify: false               // Because findByIdAndUpdate is deprecated
     })
         .then( (dish) => {
             res.statusCode = 200;
