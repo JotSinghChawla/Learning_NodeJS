@@ -13,7 +13,7 @@ connect.then( (db) => {
     // });
 
     Dishes.create({
-            name: 1,
+            name: 'Uthapizza',
             description: 'This is a Test'
         })
 
@@ -21,15 +21,32 @@ connect.then( (db) => {
         .then( (dish) => {
             console.log(dish);
 
-            return Dishes.find({}).exec();
+            return Dishes.findByIdAndUpdate( dish._id, {
+                $set: { description : 'Updated Test' }
+            },{
+                new: true,
+                useFindAndModify: false                 // Because findByIdAndUpdate is deprecated
+            }).exec();
         })
         .then( (dishes) => {
             console.log('Founded: ',dishes);
+            
+            dishes.comments.push({
+                rating: 4,
+                comment: 'I love the Food here',
+                author: 'Someone'  
+            });
+
+            return dishes.save(); 
+        })
+        .then( (dish) => {
+            console.log(dish);
 
             return Dishes.deleteMany({});
         })
         .then( () => {
             return mongoose.connection.close();
+
         })
         .catch( (err) => {
             console.log('Error: ',err);
