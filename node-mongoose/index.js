@@ -24,7 +24,7 @@ connect.then( (db) => {
             return Dishes.findByIdAndUpdate( dish._id, {
                 $set: { description : 'Updated Test' }
             },{
-                new: true,
+                new: true,                              //  So that it returns the Updated dish as a JSON string in the reply
                 useFindAndModify: false                 // Because findByIdAndUpdate is deprecated
             }).exec();
         })
