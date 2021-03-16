@@ -172,6 +172,98 @@ dishRouter.route('/:dishId/comments')
 });             // Semicolon here is necessary & We have done the chaining of REST verbs up above
 
 
+dishRouter.route('/:dishId/comments/:commentId')
+
+.get( (req,res) => {
+    Dishes.findById(req.params.dishId)
+        .then( (dish) => {
+            if( dish!=null && dish.comments.id( req.params.commentId )!=null ) {
+                res.statusCode = 200;
+                res.setHeader('Content-type', 'application/json');
+                res.json(dish.comments.id( req.params.commentId));   
+            }
+            else if( dish == null ) {
+                err = new Error( 'Dish ' + req.params.dishId + ' not found !!');
+                err.statusCode = 404;
+                return next(err);         // If we don't specify next() then it will be handled by express.    See app.js:47
+            }
+            else {
+                err = new Error( 'Comment ' + req.params.commentId + ' not found !!');
+                err.statusCode = 404;
+                return next(err);   
+            }
+        }, (err) => next(err))                              // Only need to implement one
+        .catch( (err) => next(err));                        // Only need to implement one
+}) 
+
+.post( (req,res) => {
+    res.statusCode = 403;
+    res.end('POST operation is not supported on /dishes/' + req.params.dishId + '/comments/' + req.params.commentId );
+})
+
+.put( (req,res) => {
+    // res.write('Updating the dish:' + req.params.dishId + ' with Comment: ' + req.params.commentId );
+    // Here res.write() can't be used - ?
+    Dishes.findById(req.params.dishId)
+        .then( (dish) => {
+            if( dish!=null && dish.comments.id( req.params.commentId )!=null ) {
+                if( req.body.rating ) {
+                    dish.comments.id( req.params.commentId ).rating = req.body.rating;
+                }
+
+                if( req.body.comment ) {
+                    dish.comments.id( req.params.commentId ).comment = req.body.comment;             
+                }
+
+                dish.save()
+                    .then( (dish) => {
+                        res.statusCode = 200;
+                        res.setHeader('Content-type', 'application/json');
+                        res.json(dish.comments.id( req.params.commentId ));
+                    }, (err) => next(err))     
+                    .catch( (err) => next(err));
+            }
+            else if( dish == null ) {
+                err = new Error( 'Dish ' + req.params.dishId + ' not found !!');
+                err.statusCode = 404;
+                return next(err);         // If we don't specify next() then it will be handled by express.    See app.js:47
+            }
+            else {
+                err = new Error( 'Comment ' + req.params.commentId + ' not found !!');
+                err.statusCode = 404;
+                return next(err);   
+            }
+        }, (err) => next(err))     
+        .catch( (err) => next(err));  
+})
+
+.delete( (req,res) => {
+    Dishes.findById(req.params.dishId)
+        .then( (dish) => {
+            if( dish!=null && dish.comments.id( req.params.commentId )!=null ) {
+                dish.comments.id(req.params.commentId).remove();      
+                dish.save()
+                    .then( (response) => {
+                        res.statusCode = 200;
+                        res.setHeader('Content-type', 'application/json');
+                        res.json(response);
+                    }, (err) => next(err))
+                    .catch( (err) => next(err)); 
+            }
+            else if( dish == null ) {
+                err = new Error( 'Dish ' + req.params.dishId + ' not found !!');
+                err.statusCode = 404;
+                return next(err);         // If we don't specify next() then it will be handled by express.    See app.js:47
+            }
+            else {
+                err = new Error( 'Comment ' + req.params.commentId + ' not found !!');
+                err.statusCode = 404;
+                return next(err);   
+            }
+        }, (err) => next(err))     
+        .catch( (err) => next(err));  
+}); 
+
 
 
 module.exports = dishRouter;
