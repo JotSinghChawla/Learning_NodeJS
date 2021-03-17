@@ -41,7 +41,7 @@ function auth( req, res, next ) {
     var err = new Error('You are not Authenticated!');
 
     res.setHeader('WWW-Authenticate', 'Basic');
-    err.statusCode = 401;
+    err.status = 401;
     return next(err);
   }
   
@@ -57,7 +57,7 @@ function auth( req, res, next ) {
     var err = new Error('Invalid Username/Password');
 
     res.setHeader('WWW-Authenticate', 'Basic');
-    err.statusCode = 401;
+    err.status = 401;
     return next(err);
   }
 
