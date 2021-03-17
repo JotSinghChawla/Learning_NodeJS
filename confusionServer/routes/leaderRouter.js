@@ -1,60 +1,94 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+
+const Leaders = require('../models/leaders');
 
 const leaderRouter = express.Router();
 leaderRouter.use(bodyParser.json());
 
 leaderRouter.route('/')
 
-.all( (req,res,next) => {
-    res.statusMessage = 200;
-    res.setHeader('Content-Type','text/plain');
-    next();
-})
-
-.get( (req,res) => {
-    res.end('THis is a Leaders Database static');
+.get( (req,res,next) => {
+    Leaders.find({})
+        .then( (leader) => {
+            res.statusCode = 200;
+            res.setHeader('Content-Types','application/json');
+            res.json(leader);
+        })
+        .catch( (err) => next(err) );
 }) 
 
-.post( (req,res) => {
-    res.end('Will Post your request in Leaders: '+ req.body.name + ' => ' +  req.body.description );
+.post( (req,res,next) => {
+    Leaders.create( req.body )
+        .then( (leader) => {
+            console.log('Leader Created: ',leader);
+            res.statusCode = 200;
+            res.setHeader('Content-type', 'application/json');
+            res.json(leader);
+        })
+        .catch( err => next(err) );
 })
 
-.put( (req,res) => {
+.put( (req,res,next) => {
     res.statusCode = 403;
     res.end('PUT operation is not supported on /leaders');
 })
 
-.delete( (req,res) => {
-    res.end('Deleting all the Leaders!!!');
+.delete( (req,res,next) => {
+    Leaders.deleteMany({})
+        .then( (response) => {
+            console.log('All Leaders Deleted: \n',response);
+            res.statusCode = 200;
+            res.setHeader('Content-type', 'application/json');
+            res.json(response);
+        })
+        .catch( err => next(err) );
 });             // Semicolon here is necessary & We have done the chaining of REST verbs up above
 
 
 
 leaderRouter.route('/:leaderId')
 
-.all( (req,res,next) => {
-    res.statusMessage = 200;
-    res.setHeader('Content-Type','text/plain');
-    next();
-})
-
-.get( (req,res) => {
-    res.end('THis is a Leaders Database static with Specific leader: ' + req.params.leaderId);
+.get( (req,res,next) => {
+    Leaders.findById( req.params.leaderId ) 
+        .then( leader => {
+            res.statusCode = 200;
+            res.setHeader('Content-type', 'application/json');
+            res.json(leader);
+        })
+        .catch( err => next(err) );
 }) 
 
-.post( (req,res) => {
+.post( (req,res,next) => {
     res.statusCode = 403;
     res.end('POST operation is not supported on /leaders/' + req.params.leaderId );
 })
 
-.put( (req,res) => {
+.put( (req,res,next) => {
     res.write('Updating the leader: ' + req.params.leaderId );
-    res.end('\nWill UPDATE your single leader request in leaders: '+ req.body.name + ' => ' +  req.body.description );
+    Leaders.findByIdAndUpdate( req.params.leaderId, {
+        $set: req.body
+    }, {
+        new: true,                            //  So that it returns the Updated dish as a JSON string in the reply
+        useFindAndModify: false               // Because findByIdAndUpdate is deprecated
+    })
+        .then( leader => {
+            res.statusCode = 200;
+            res.setHeader('Content-type', 'application/json');
+            res.json(leader);
+        })
+        .catch( err => next(err) );
 })
 
-.delete( (req,res) => {
-    res.end('Deleting the Single Leader! with id = ' + req.params.leaderId );
+.delete( (req,res,next) => {
+    Leaders.findByIdAndRemove( req.params.leaderId )
+        .then( leader => {
+            res.statusCode = 200;
+            res.setHeader('Content-type', 'application/json');
+            res.json(leader);
+        })
+        .catch( err => next(err) );
 }); 
 
 
