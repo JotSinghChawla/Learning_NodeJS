@@ -47,13 +47,13 @@ function auth( req, res, next ) {
       return next(err);
     }
     
-    var auth = new Buffer(authHeader.split(' ')[1], 'base64').toString().split(':');
+    var auth = new Buffer.from(authHeader.split(' ')[1], 'base64').toString().split(':');
 
     var username = auth[0];
     var password = auth[1];
 
     if (username === 'admin' && password === 'password') {
-      res.cookie('user', 'admin', { signed: true });
+      res.cookie('user', 'superuser', { signed: true });
       next();                                                       // Will Pass the request to Next Middleware
     }
     else {
@@ -65,7 +65,7 @@ function auth( req, res, next ) {
     }
   }
   else {
-    if (req.signedCookies.user == 'admin') {
+    if (req.signedCookies.user == 'superuser') {
       next();
     }
     else {
