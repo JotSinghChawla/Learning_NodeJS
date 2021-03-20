@@ -7,7 +7,7 @@ var session = require('express-session');
 var Filestore = require('session-file-store')(session);                 // (session)   ???
 
 var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+var usersRouter = require('./routes/userRouter');
 var dishRouter = require('./routes/dishRouter');
 var promoRouter = require('./routes/promoRouter');
 var leaderRouter = require('./routes/leaderRouter');
@@ -42,50 +42,48 @@ app.use(session({
   store: new Filestore()
 }));
 
+app.use('/', indexRouter);
+app.use('/users', usersRouter);
+
 function auth( req, res, next ) {
   console.log(req.headers , "  \nCookies: " , req.signedCookies, "  \nSession: " , req.session, );
 
   // if (!req.signedCookies.user) {
   if ( !req.session.user) {
-
-    var authHeader = req.headers.authorization; 
-
-    if (!authHeader) {
+    // var authHeader = req.headers.authorization; 
+    // if (!authHeader) {
       var err = new Error('You are not Authenticated!');
-
-      res.setHeader('WWW-Authenticate', 'Basic');
+      // res.setHeader('WWW-Authenticate', 'Basic'); 
       err.status = 401;
       return next(err);
-    }
-    
-    var auth = new Buffer.from(authHeader.split(' ')[1], 'base64').toString().split(':');
+       
+  //   var auth = new Buffer.from(authHeader.split(' ')[1], 'base64').toString().split(':');
 
-    var username = auth[0];
-    var password = auth[1];
+  //   var username = auth[0];
+  //   var password = auth[1];
 
-    if (username === 'admin' && password === 'password') {
-      // res.cookie('user', 'superuser', { signed: true });
-      req.session.user = 'superuser';
-      next();                                                       // Will Pass the request to Next Middleware
-    }
-    else {
-      var err = new Error('Invalid Username/Password');
+  //   if (username === 'admin' && password === 'password') {
+  //     // res.cookie('user', 'superuser', { signed: true });
+  //     req.session.user = 'superuser';
+  //     next();                                                       // Will Pass the request to Next Middleware
+  //   }
+  //   else {
+  //     var err = new Error('Invalid Username/Password');
 
-      res.setHeader('WWW-Authenticate', 'Basic');
-      err.status = 401;
-      return next(err);
-    }
+  //     res.setHeader('WWW-Authenticate', 'Basic');
+  //     err.status = 401;
+  //     return next(err);
+  //   }
   }
   else {
     // if (req.signedCookies.user == 'superuser') {
-    if (req.session.user == 'superuser') {
+    if (req.session.user === 'user_authenticated') {
       next();
     }
     else {
       var err = new Error('You are not authenticated:  Invalid Cookie');
-
-      res.setHeader('WWW-Authenticate', 'Basic');
-      err.status = 401;
+      // res.setHeader('WWW-Authenticate', 'Basic');
+      err.status = 403;
       return next(err);
     }
   }
@@ -96,8 +94,6 @@ app.use(auth);      // Function
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
 app.use('/dishes', dishRouter);
 app.use('/promotions', promoRouter);
 app.use('/leaders', leaderRouter);
