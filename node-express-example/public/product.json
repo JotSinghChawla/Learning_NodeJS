@@ -1,0 +1,52 @@
+{
+    "product" : [
+        {
+            "name": "Classic Hoddie",
+            "price": "5000",
+            "image": "/images/hoodie.jpg",
+            "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer vehicula sapien quis erat dictum, vel tincidunt est suscipit. Duis suscipit lobortis felis, in lacinia enim maximus eu. Sed imperdiet velit molestie volutpat mollis. Phasellus vehicula felis eu dolor sollicitudin dignissim. Morbi sed accumsan lorem. Sed ut est vitae ligula pharetra laoreet eu rhoncus urna. Aliquam tempor sagittis auctor."
+        }, 
+        {
+            "name": "Jeans",
+            "price": "8000",
+            "image": "/images/jeans.jpg",
+            "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer vehicula sapien quis erat dictum, vel tincidunt est suscipit. Duis suscipit lobortis felis, in lacinia enim maximus eu. Sed imperdiet velit molestie volutpat mollis. Phasellus vehicula felis eu dolor sollicitudin dignissim. Morbi sed accumsan lorem. Sed ut est vitae ligula pharetra laoreet eu rhoncus urna. Aliquam tempor sagittis auctor."
+        },
+        {
+            "name": "Shoes",
+            "price": "6000",
+            "image": "/images/shoes.jpg",
+            "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer vehicula sapien quis erat dictum, vel tincidunt est suscipit. Duis suscipit lobortis felis, in lacinia enim maximus eu. Sed imperdiet velit molestie volutpat mollis. Phasellus vehicula felis eu dolor sollicitudin dignissim. Morbi sed accumsan lorem. Sed ut est vitae ligula pharetra laoreet eu rhoncus urna. Aliquam tempor sagittis auctor."
+        },
+        {
+            "name": "Sunglasses",
+            "price": "15000",
+            "image": "/images/shades.jpg",
+            "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer vehicula sapien quis erat dictum, vel tincidunt est suscipit. Duis suscipit lobortis felis, in lacinia enim maximus eu. Sed imperdiet velit molestie volutpat mollis. Phasellus vehicula felis eu dolor sollicitudin dignissim. Morbi sed accumsan lorem. Sed ut est vitae ligula pharetra laoreet eu rhoncus urna. Aliquam tempor sagittis auctor."
+        }, 
+        {
+            "name": "Laptop",
+            "price": "90000",
+            "image": "/images/jeans.jpg",
+            "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer vehicula sapien quis erat dictum, vel tincidunt est suscipit. Duis suscipit lobortis felis, in lacinia enim maximus eu. Sed imperdiet velit molestie volutpat mollis. Phasellus vehicula felis eu dolor sollicitudin dignissim. Morbi sed accumsan lorem. Sed ut est vitae ligula pharetra laoreet eu rhoncus urna. Aliquam tempor sagittis auctor."
+        },
+        {
+            "name": "Mouse",
+            "price": "200",
+            "image": "/images/mouse.jpg",
+            "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer vehicula sapien quis erat dictum, vel tincidunt est suscipit. Duis suscipit lobortis felis, in lacinia enim maximus eu. Sed imperdiet velit molestie volutpat mollis. Phasellus vehicula felis eu dolor sollicitudin dignissim. Morbi sed accumsan lorem. Sed ut est vitae ligula pharetra laoreet eu rhoncus urna. Aliquam tempor sagittis auctor."
+        },
+        {
+            "name": "Television",
+            "price": "50000",
+            "image": "/images/tv.jpg",
+            "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer vehicula sapien quis erat dictum, vel tincidunt est suscipit. Duis suscipit lobortis felis, in lacinia enim maximus eu. Sed imperdiet velit molestie volutpat mollis. Phasellus vehicula felis eu dolor sollicitudin dignissim. Morbi sed accumsan lorem. Sed ut est vitae ligula pharetra laoreet eu rhoncus urna. Aliquam tempor sagittis auctor."
+        }, 
+        {
+            "name": "Headphones",
+            "price": "60000",
+            "image": "/images/headphones.jpg",
+            "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer vehicula sapien quis erat dictum, vel tincidunt est suscipit. Duis suscipit lobortis felis, in lacinia enim maximus eu. Sed imperdiet velit molestie volutpat mollis. Phasellus vehicula felis eu dolor sollicitudin dignissim. Morbi sed accumsan lorem. Sed ut est vitae ligula pharetra laoreet eu rhoncus urna. Aliquam tempor sagittis auctor."
+        }
+    ]
+}
