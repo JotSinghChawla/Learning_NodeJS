@@ -3,9 +3,9 @@ var express = require('express');
 const bodyParser = require('body-parser');
 var User = require('../models/users');
 var passport = require('passport');
+var authenticate = require('../authenticate');
 
 var router = express.Router();
-
 router.use( bodyParser.json() );
 
 router.get('/', function(req, res, next) {
@@ -51,10 +51,16 @@ router.post('/signup', (req, res, next) => {
   //   .catch( err => next(err) );
 // });
 
-router.post('/login', passport.authenticate('local'), (req, res, next) => {       // This plugin will do the error handling itself
+router.post('/login', passport.authenticate('local'), (req, res, next) => {   // Rrror handling will ne done by .authenticate() 
+                                                                              // method as it acts as middleware here
+ 
+  var token = authenticate.getToken({ _id: req.user._id });           // Created a Jwt Token & This token strategy can also 
+                                                                      // be used with third party authentication like Oauth
+
   res.statusCode = 200;
   res.setHeader('Content-Type', 'application/json');
-  res.json({ success: true, status: 'You are Successfully logged in!'});
+  // res.json({ success: true, status: 'You are Successfully logged in!'});
+  res.json({ success: true, token: token, status: 'You are Successfully logged in!'});
 });
   
   // if( !req.session.user) {                                           // After implementing Passport-local
