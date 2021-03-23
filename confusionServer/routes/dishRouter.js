@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');   
+const authenticate = require('../authenticate');
 
 const Dishes = require('../models/dishes');
 
@@ -20,7 +21,7 @@ dishRouter.route('/')
         .catch( (err) => next(err));                        // Only need to implement one
 }) 
 
-.post( (req,res, next) => {
+.post( authenticate.verifyUser, (req,res, next) => {
     Dishes.create( req.body )
         .then( (dish) => {
             console.log('Dish Created: ',dish);
@@ -37,7 +38,7 @@ dishRouter.route('/')
     res.end('PUT operation is not supported on /dishes');
 })
 
-.delete( (req,res) => {
+.delete( authenticate.verifyUser, (req,res) => {             // Here .verifyUser() act as a middleware for POST operation
     Dishes.deleteMany({})
         .then( (response) => {
             res.statusCode = 200;
@@ -63,12 +64,12 @@ dishRouter.route('/:dishId')
         .catch( (err) => next(err));  
 }) 
 
-.post( (req,res) => {
+.post( authenticate.verifyUser, (req,res) => {
     res.statusCode = 403;
     res.end('POST operation is not supported on /dishes/' + req.params.dishId );
 })
 
-.put( (req,res) => {
+.put( authenticate.verifyUser, (req,res) => {
     // res.write('Updating the dish: ' + req.params.dishId );
     // Here res.write() can't be used - ?
     Dishes.findByIdAndUpdate(req.params.dishId, {
@@ -86,7 +87,7 @@ dishRouter.route('/:dishId')
         .catch( (err) => next(err));  
 })
 
-.delete( (req,res) => {
+.delete( authenticate.verifyUser, (req,res) => {
     Dishes.findByIdAndRemove(req.params.dishId)
         .then( (dish) => {
             res.statusCode = 200;
@@ -121,7 +122,7 @@ dishRouter.route('/:dishId/comments')
         .catch( (err) => next(err));                        // Only need to implement one
 }) 
 
-.post( (req,res) => {
+.post(authenticate.verifyUser, (req,res) => {
     Dishes.findById( req.params.dishId )
         .then( (dish) => {
             if( dish!=null ) {
@@ -142,12 +143,12 @@ dishRouter.route('/:dishId/comments')
         .catch( (err) => next(err));  
 })
 
-.put( (req,res) => {
+.put( authenticate.verifyUser, (req,res) => {
     res.statusCode = 403;
     res.end('PUT operation is not supported on /dishes/' + req.params.dishId + '/comments');
 })
 
-.delete( (req,res) => {
+.delete( authenticate.verifyUser, (req,res) => {
     Dishes.findById( req.params.dishId )
         .then( (dish) => {
             if( dish!=null ) {
@@ -196,12 +197,12 @@ dishRouter.route('/:dishId/comments/:commentId')
         .catch( (err) => next(err));                        // Only need to implement one
 }) 
 
-.post( (req,res) => {
+.post( authenticate.verifyUser, (req,res) => {
     res.statusCode = 403;
     res.end('POST operation is not supported on /dishes/' + req.params.dishId + '/comments/' + req.params.commentId );
 })
 
-.put( (req,res) => {
+.put( authenticate.verifyUser, (req,res) => {
     // res.write('Updating the dish:' + req.params.dishId + ' with Comment: ' + req.params.commentId );
     // Here res.write() can't be used - ?
     Dishes.findById(req.params.dishId)
@@ -237,7 +238,7 @@ dishRouter.route('/:dishId/comments/:commentId')
         .catch( (err) => next(err));  
 })
 
-.delete( (req,res) => {
+.delete( authenticate.verifyUser, (req,res) => {
     Dishes.findById(req.params.dishId)
         .then( (dish) => {
             if( dish!=null && dish.comments.id( req.params.commentId )!=null ) {
