@@ -5,6 +5,8 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var session = require('express-session');
 var Filestore = require('session-file-store')(session);                 // (session)   ???
+var passport = require('passport');
+var authenticate = require('./authenticate');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/userRouter');
@@ -42,6 +44,9 @@ app.use(session({
   store: new Filestore()
 }));
 
+app.use(passport.initialize());
+app.use(passport.session());
+
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
@@ -49,12 +54,13 @@ function auth( req, res, next ) {
   console.log(req.headers , "  \nCookies: " , req.signedCookies, "  \nSession: " , req.session, );
 
   // if (!req.signedCookies.user) {
-  if ( !req.session.user) {
+  // if ( !req.session.user) {
+    if ( !req.user ) {                               // After implementing Passport-local 
     // var authHeader = req.headers.authorization; 
     // if (!authHeader) {
       var err = new Error('You are not Authenticated!');
       // res.setHeader('WWW-Authenticate', 'Basic'); 
-      err.status = 401;
+      err.status = 403;
       return next(err);
        
   //   var auth = new Buffer.from(authHeader.split(' ')[1], 'base64').toString().split(':');
@@ -77,15 +83,16 @@ function auth( req, res, next ) {
   }
   else {
     // if (req.signedCookies.user == 'superuser') {
-    if (req.session.user === 'user_authenticated') {
-      next();
-    }
-    else {
-      var err = new Error('You are not authenticated:  Invalid Cookie');
-      // res.setHeader('WWW-Authenticate', 'Basic');
-      err.status = 403;
-      return next(err);
-    }
+    next();
+    // if (req.session.user === 'user_authenticated') {               // After Passport-local
+    //   next();
+    // }
+    // else {
+    //   var err = new Error('You are not authenticated:  Invalid Cookie');
+    //   // res.setHeader('WWW-Authenticate', 'Basic');
+    //   err.status = 403;
+    //   return next(err);
+    // }                                                              // After Passport-local
   }
 
 }
