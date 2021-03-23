@@ -20,7 +20,7 @@ dishRouter.route('/')
         .catch( (err) => next(err));                        // Only need to implement one
 }) 
 
-.post( (req,res) => {
+.post( (req,res, next) => {
     Dishes.create( req.body )
         .then( (dish) => {
             console.log('Dish Created: ',dish);
