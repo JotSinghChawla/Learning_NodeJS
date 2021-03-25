@@ -10,8 +10,9 @@ dishRouter.use(bodyParser.json());
 
 dishRouter.route('/')
 
-.get( (req,res) => {
+.get( (req,res,next) => {
     Dishes.find({})
+    .populate( 'comments.author' )
         .then( (dishes) => {
             res.statusCode = 200;
             res.setHeader('Content-type', 'application/json');
@@ -38,7 +39,7 @@ dishRouter.route('/')
     res.end('PUT operation is not supported on /dishes');
 })
 
-.delete( authenticate.verifyUser, (req,res) => {             // Here .verifyUser() act as a middleware for POST operation
+.delete( authenticate.verifyUser, (req,res,next) => {             // Here .verifyUser() act as a middleware for POST operation
     Dishes.deleteMany({})
         .then( (response) => {
             res.statusCode = 200;
@@ -53,8 +54,9 @@ dishRouter.route('/')
 
 dishRouter.route('/:dishId')
 
-.get( (req,res) => {
+.get( (req,res,next) => {
     Dishes.findById(req.params.dishId)
+    .populate( 'comments.author' )
         .then( (dish) => {
             res.statusCode = 200;
             res.setHeader('Content-type', 'application/json');
@@ -69,7 +71,7 @@ dishRouter.route('/:dishId')
     res.end('POST operation is not supported on /dishes/' + req.params.dishId );
 })
 
-.put( authenticate.verifyUser, (req,res) => {
+.put( authenticate.verifyUser, (req,res,next) => {
     // res.write('Updating the dish: ' + req.params.dishId );
     // Here res.write() can't be used - ?
     Dishes.findByIdAndUpdate(req.params.dishId, {
@@ -87,7 +89,7 @@ dishRouter.route('/:dishId')
         .catch( (err) => next(err));  
 })
 
-.delete( authenticate.verifyUser, (req,res) => {
+.delete( authenticate.verifyUser, (req,res,next) => {
     Dishes.findByIdAndRemove(req.params.dishId)
         .then( (dish) => {
             res.statusCode = 200;
@@ -104,8 +106,9 @@ dishRouter.route('/:dishId')
 
 dishRouter.route('/:dishId/comments')
 
-.get( (req,res) => {
+.get( (req,res,next) => {
     Dishes.findById( req.params.dishId )
+    .populate( 'comments.author' )
         .then( (dish) => {
             if( dish!=null ) {
                 res.statusCode = 200;
@@ -122,16 +125,22 @@ dishRouter.route('/:dishId/comments')
         .catch( (err) => next(err));                        // Only need to implement one
 }) 
 
-.post(authenticate.verifyUser, (req,res) => {
+.post(authenticate.verifyUser, (req,res,next) => {            // When we verify user here, The Passport-JWT would have loaded 
+                                                         // user info. into the req.body.user 
     Dishes.findById( req.params.dishId )
         .then( (dish) => {
             if( dish!=null ) {
+                req.body.author = req.user._id;                 // So here we can add reference of the ObjectId of user 
                 dish.comments.push( req.body );
                 dish.save()
                     .then( (dish) => {
-                        res.statusCode = 200;
-                        res.setHeader('Content-type', 'application/json');
-                        res.json(dish.comments);  
+                        Dishes.findById(dish._id)
+                        .populate('comments.author')                    // We need to populate the response dish again 
+                            .then( dish => {
+                                res.statusCode = 200;
+                                res.setHeader('Content-type', 'application/json');
+                                res.json(dish.comments);
+                            }, (err) => next(err));
                     }, (err) => next(err));
             }
             else {
@@ -143,12 +152,12 @@ dishRouter.route('/:dishId/comments')
         .catch( (err) => next(err));  
 })
 
-.put( authenticate.verifyUser, (req,res) => {
+.put( authenticate.verifyUser, (req,res,next) => {
     res.statusCode = 403;
     res.end('PUT operation is not supported on /dishes/' + req.params.dishId + '/comments');
 })
 
-.delete( authenticate.verifyUser, (req,res) => {
+.delete( authenticate.verifyUser, (req,res,next) => {
     Dishes.findById( req.params.dishId )
         .then( (dish) => {
             if( dish!=null ) {
@@ -175,8 +184,9 @@ dishRouter.route('/:dishId/comments')
 
 dishRouter.route('/:dishId/comments/:commentId')
 
-.get( (req,res) => {
+.get( (req,res,next) => {
     Dishes.findById(req.params.dishId)
+    .populate( 'comments.author' )
         .then( (dish) => {
             if( dish!=null && dish.comments.id( req.params.commentId )!=null ) {
                 res.statusCode = 200;
@@ -197,12 +207,12 @@ dishRouter.route('/:dishId/comments/:commentId')
         .catch( (err) => next(err));                        // Only need to implement one
 }) 
 
-.post( authenticate.verifyUser, (req,res) => {
+.post( authenticate.verifyUser, (req,res,next) => {
     res.statusCode = 403;
     res.end('POST operation is not supported on /dishes/' + req.params.dishId + '/comments/' + req.params.commentId );
 })
 
-.put( authenticate.verifyUser, (req,res) => {
+.put( authenticate.verifyUser, (req,res,next) => {
     // res.write('Updating the dish:' + req.params.dishId + ' with Comment: ' + req.params.commentId );
     // Here res.write() can't be used - ?
     Dishes.findById(req.params.dishId)
@@ -218,9 +228,13 @@ dishRouter.route('/:dishId/comments/:commentId')
 
                 dish.save()
                     .then( (dish) => {
-                        res.statusCode = 200;
-                        res.setHeader('Content-type', 'application/json');
-                        res.json(dish.comments.id( req.params.commentId ));
+                        Dishes.findById( dish._id)
+                        .populate('comments.author')                     // We need to populate the response dish again
+                            .then( dish => {
+                                res.statusCode = 200;
+                                res.setHeader('Content-type', 'application/json');
+                                res.json(dish.comments.id( req.params.commentId ));
+                            }, (err) => next(err)); 
                     }, (err) => next(err))     
                     .catch( (err) => next(err));
             }
@@ -238,16 +252,20 @@ dishRouter.route('/:dishId/comments/:commentId')
         .catch( (err) => next(err));  
 })
 
-.delete( authenticate.verifyUser, (req,res) => {
+.delete( authenticate.verifyUser, (req,res,next) => {
     Dishes.findById(req.params.dishId)
         .then( (dish) => {
             if( dish!=null && dish.comments.id( req.params.commentId )!=null ) {
                 dish.comments.id(req.params.commentId).remove();      
                 dish.save()
                     .then( (response) => {
-                        res.statusCode = 200;
-                        res.setHeader('Content-type', 'application/json');
-                        res.json(response);
+                        Dishes.findById( response._id)          // Doesn't that comment get removed - ??  how is it still finding the comment here - ??
+                        .populate('comments.author')                    // We need to populate the response dish again
+                            .then( dish => {
+                                res.statusCode = 200;
+                                res.setHeader('Content-type', 'application/json');
+                                res.json(dish);
+                            }, (err) => next(err)); 
                     }, (err) => next(err))
                     .catch( (err) => next(err)); 
             }
