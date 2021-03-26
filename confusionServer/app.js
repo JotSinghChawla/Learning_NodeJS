@@ -30,6 +30,15 @@ connect.then( (db) => {
 
 var app = express();
 
+app.all('*', (req, res, next) => {                    // This is used to Redirect all request to Secure Server
+  if( req.secure ) {
+    return next();
+  }
+  else {
+    res.redirect(307, 'https://' + req.hostname + ':' + app.get('secPort') + req.url);   // secPort is register in www.js in /bin folder 
+  }
+});
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
