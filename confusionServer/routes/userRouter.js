@@ -4,12 +4,19 @@ const bodyParser = require('body-parser');
 var User = require('../models/users');
 var passport = require('passport');
 var authenticate = require('../authenticate');
+const users = require('../models/users');
 
 var router = express.Router();
 router.use( bodyParser.json() );
 
-router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
+router.get('/', authenticate.verifyUser, authenticate.verifyAdmin, function(req, res, next) {
+  User.find({})
+    .then( users => {
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'application/json');
+      res.json(users);
+    })
+    .catch( err => next(err) );
 });
 
 router.post('/signup', (req, res, next) => {
