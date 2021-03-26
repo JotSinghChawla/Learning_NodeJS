@@ -38,3 +38,40 @@ exports.jwtPassport = passport.use( new JwtStrategy( options, (jwt_payload, done
 
 exports.verifyUser = passport.authenticate('jwt', {session: false});        // Session is false because we won't be using it
                                                                         // Can be called anytime to verify Users
+
+exports.verifyAdmin = ( req,res, next ) => {                        // You have to write res too even if you arn't using it 
+    if ( req.user.admin )                                           // in order to work with next. Try remove res And it will show error
+        return next();
+    else {
+        var err = new Error('You are not a Admin, You can not perform this Action!');
+        err.status = 403;
+        return next(err);
+    }
+};
+
+
+// exports.verifyOrdinaryUser = function (req, res, next) {
+
+//     var token = req.body.token;
+
+//     if (token) {
+//         // verifies secret and checks exp
+//         jwt.verify(token, config.secretKey, function (err, decoded) {
+//             if (err) {
+//                 var err = new Error('You are not authenticated!');
+//                 err.status = 401;
+//                 return next(err);
+//             } else {
+//                 next();
+//             }
+//         });
+//     } else {
+
+//         var err = new Error('Seems that there is not a valid token! ' + token);
+//         err.status = 403;
+//         return next(err);
+//     }
+// };
+
+
+                                                                
