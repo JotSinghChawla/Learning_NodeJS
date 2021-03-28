@@ -5,11 +5,12 @@ var User = require('../models/users');
 var passport = require('passport');
 var authenticate = require('../authenticate');
 const users = require('../models/users');
+const cors = require('./cors');
 
 var router = express.Router();
 router.use( bodyParser.json() );
 
-router.get('/', authenticate.verifyUser, authenticate.verifyAdmin, function(req, res, next) {
+router.get('/', cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyAdmin, function(req, res, next) {
   User.find({})
     .then( users => {
       res.statusCode = 200;
@@ -19,7 +20,7 @@ router.get('/', authenticate.verifyUser, authenticate.verifyAdmin, function(req,
     .catch( err => next(err) );
 });
 
-router.post('/signup', (req, res, next) => {
+router.post('/signup', cors.corsWithOptions, (req, res, next) => {
   User.register( new User({ username: req.body.username}), req.body.password, (err, user) => {
     if( err ) {
       res.statusCode = 500;
@@ -71,7 +72,7 @@ router.post('/signup', (req, res, next) => {
   //   .catch( err => next(err) );
 // });
 
-router.post('/login', passport.authenticate('local'), (req, res, next) => {   // Rrror handling will ne done by .authenticate() 
+router.post('/login', cors.corsWithOptions, passport.authenticate('local'), (req, res, next) => {   // Rrror handling will ne done by .authenticate() 
                                                                               // method as it acts as middleware here
  
   var token = authenticate.getToken({ _id: req.user._id });           // Created a Jwt Token & This token strategy can also 
@@ -122,7 +123,7 @@ router.post('/login', passport.authenticate('local'), (req, res, next) => {   //
   // }
 // });
 
-router.get('/logout', (req, res, next) => {
+router.get('/logout', cors.corsWithOptions, (req, res, next) => {
   if( req.session ) {
     req.session.destroy();                              // Shutdown current session
     res.clearCookie('session-id');                      // Clear cookies
@@ -132,6 +133,16 @@ router.get('/logout', (req, res, next) => {
     var err = new Error('You are not logged in!');
     err.status = 403;
     next(err);  
+  }
+});
+
+router.get('/facebook/token', passport.authenticate('facebook-token'), (req, res) => {
+  if( req.user ) {
+    var token = authenticate.getToken({ _id: req.user.id });    // After this, we don't need Access Token, we can use JWT token
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'text/plain');
+    res.json({ success: true, token: token, status: 'You are Successfully Logged in!'});
+    
   }
 });
 
