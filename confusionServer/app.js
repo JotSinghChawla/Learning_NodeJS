@@ -15,15 +15,17 @@ var dishRouter = require('./routes/dishRouter');
 var promoRouter = require('./routes/promoRouter');
 var leaderRouter = require('./routes/leaderRouter');
 var uploadRouter = require('./routes/uploadRouter');
+var favoriteRouter = require('./routes/favoriteRouter');
 
 const mongoose = require('mongoose');
 // mongoose.Promise = require('bluebird');                          // IDK why it is used
 
-const Dishes = require('./models/dishes');
+// const Dishes = require('./models/dishes');
 
 // const url = 'mongodb://localhost:27017/conFusion';
 const url = config.mongoUrl;
 const connect = mongoose.connect(url);
+// mongoose.connect(url, { useUnifiedTopology: true, useNewUrlParser: true });    // IDK why it can be used
 
 connect.then( (db) => {
   console.log('Connect correctly to the Server');
@@ -71,6 +73,7 @@ app.use('/dishes', dishRouter);
 app.use('/promotions', promoRouter);
 app.use('/leaders', leaderRouter);
 app.use('/imageUpload', uploadRouter);
+app.use('/favorite', favoriteRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
