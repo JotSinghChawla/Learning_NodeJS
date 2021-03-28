@@ -2,3 +2,4 @@ node_modules
 bin/cert.csr
 bin/certificate.pm
 bin/private.key
+config.js
