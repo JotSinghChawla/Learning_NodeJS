@@ -17,7 +17,6 @@ favoriteRouter.route('/')
             res.statusCode = 200;
             res.setHeader('Content-type', 'application/json');
             res.json(fav);
-
         }, (err) => next(err))
         .catch( (err) => next(err));  
 })
@@ -28,9 +27,14 @@ favoriteRouter.route('/')
 // I have changed $push to $addToSet as it checks if unique value is added or not
     Favorite.findOneAndUpdate( { user: req.user._id }, { $addToSet: { dishes: req.body } }, { new: true, upsert: true } )
         .then( (fav) => {
-            res.statusCode = 200;
-            res.setHeader('Content-type', 'application/json');
-            res.json(fav);
+            Favorite.findById( fav._id )
+            .populate('user dishes')
+                .then( fav => {
+                    res.statusCode = 200;
+                    res.setHeader('Content-type', 'application/json');
+                    res.json(fav);
+                })
+                .catch( (err) => next(err));
         }, (err) => next(err))
         .catch( (err) => next(err));
 })
@@ -43,10 +47,14 @@ favoriteRouter.route('/')
 .delete( cors.corsWithOptions, authenticate.verifyUser, ( req, res, next ) => {
     Favorite.findOneAndDelete({ user: req.user._id })
         .then( (fav) => {
-            res.statusCode = 200;
-            res.setHeader('Content-type', 'application/json');
-            res.json(fav);
-
+            Favorite.findById( fav._id )
+            .populate('user dishes')
+                .then( fav => {
+                    res.statusCode = 200;
+                    res.setHeader('Content-type', 'application/json');
+                    res.json(fav);
+                })
+                .catch( (err) => next(err));
         }, (err) => next(err))
         .catch( (err) => next(err));  
 });
@@ -57,8 +65,27 @@ favoriteRouter.route('/:dishId')
 })
 
 .get( cors.cors, authenticate.verifyUser, ( req, res, next ) => {
-    res.statusCode = 403;
-    res.end('GET operation is not supported on /favorite/:dishId');
+    Favorite.findOne({ user: req.user._id })
+        .then( favorite => {
+            if( !favorite ) {
+                res.statusCode = 200;
+                res.setHeader('Content-type', 'application/json');
+                return res.json({ "exists": false, "favorites": favorite });
+            }
+            else {
+                if( favorite.dishes.indexOf( req.params.dishId ) < 0) {
+                    res.statusCode = 200;
+                    res.setHeader('Content-type', 'application/json');
+                    return res.json({ "exists": false, "favorites": favorite });
+                }
+                else {
+                    res.statusCode = 200;
+                    res.setHeader('Content-type', 'application/json');
+                    return res.json({ "exists": true, "favorites": favorite });
+                }
+            }
+        }, err => next(err) )
+        .catch( err => next(err) );
 })
 
 .post( cors.corsWithOptions, authenticate.verifyUser, ( req, res, next ) => {
@@ -67,9 +94,14 @@ favoriteRouter.route('/:dishId')
 // I have changed $push to $addToSet as it checks if unique value is added or not
     Favorite.findOneAndUpdate( { user: req.user._id }, { $addToSet: { dishes: req.params.dishId } }, { new: true, upsert: true } )
         .then( (fav) => {
-            res.statusCode = 200;
-            res.setHeader('Content-type', 'application/json');
-            res.json(fav);
+            Favorite.findById( fav._id )
+            .populate('user dishes')
+                .then( fav => {
+                    res.statusCode = 200;
+                    res.setHeader('Content-type', 'application/json');
+                    res.json(fav);
+                })
+                .catch( (err) => next(err));
         }, (err) => next(err))
         .catch( (err) => next(err));
 })
@@ -83,10 +115,14 @@ favoriteRouter.route('/:dishId')
     // Here $pull helps us to find & remove the give field
     Favorite.findOneAndUpdate({ user: req.user._id }, { $pull: { dishes: req.params.dishId }}, {new: true})
         .then( fav => {
-            res.statusCode = 200;
-            res.setHeader('Content-type', 'application/json');
-            res.json(fav);
-
+            Favorite.findById( fav._id )
+            .populate('user dishes')
+                .then( fav => {
+                    res.statusCode = 200;
+                    res.setHeader('Content-type', 'application/json');
+                    res.json(fav);
+                })
+                .catch( (err) => next(err));  
         }, (err) => next(err))
         .catch( (err) => next(err));  
                                         // This is a long method to remove the favorite Dish
