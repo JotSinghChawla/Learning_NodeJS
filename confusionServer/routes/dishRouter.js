@@ -15,7 +15,7 @@ dishRouter.route('/')
 })
 
 .get( cors.cors, (req,res,next) => {
-    Dishes.find({})
+    Dishes.find( req.query )                // Integrating with the Query parameter
     .populate( 'comments.author' )
         .then( (dishes) => {
             res.statusCode = 200;
