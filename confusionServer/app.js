@@ -48,7 +48,7 @@ app.set('view engine', 'jade');
 
 app.use(logger('dev'));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: false }));                 // IDK why -- ?
 // app.use(cookieParser('12345-67890-01234-54321'));               // Random Signed Cookie
 
 // app.use(session({                            // As we are using JWT instead
@@ -73,7 +73,7 @@ app.use('/dishes', dishRouter);
 app.use('/promotions', promoRouter);
 app.use('/leaders', leaderRouter);
 app.use('/imageUpload', uploadRouter);
-app.use('/favorite', favoriteRouter);
+app.use('/favorites', favoriteRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

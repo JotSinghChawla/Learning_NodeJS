@@ -9,7 +9,7 @@ const cors = require('./cors');
 var router = express.Router();
 router.use( express.json() );
 
-router.options( '*', cors.corsWithOptions, (req, res) => {
+router.options('*', cors.corsWithOptions, (req, res) => {
    res.sendStatus(200);
 });
 
