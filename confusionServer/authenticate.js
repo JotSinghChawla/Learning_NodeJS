@@ -18,7 +18,7 @@ passport.serializeUser( User.serializeUser() );                         // - ? m
 passport.deserializeUser( User.deserializeUser() );                     // - ?
 
 exports.getToken = function(user) {                         // Will create a new Token
-    return jwt.sign(user, config.secretKey, { expiresIn: 10900 });                       // valid for 3600sec or 1 hour
+    return jwt.sign(user, config.secretKey, { expiresIn: 21600 });                       // valid for 3600sec or 1 hour
 }
 
 var options = {};
