@@ -1,5 +1,5 @@
 const express = require('express');
-// const mongoose = require('mongoose');
+const mongoose = require('mongoose');
 const authenticate = require('../authenticate');
 const cors = require('./cors');
 
@@ -9,6 +9,9 @@ const favoriteRouter = express.Router();
 favoriteRouter.use(express.json());
 
 favoriteRouter.route('/')
+.options( cors.corsWithOptions, (req, res) => {
+    res.sendStatus = 200;
+})
 
 .get( cors.cors, authenticate.verifyUser, ( req, res, next ) => {
     Favorite.find({ user: req.user._id })
@@ -16,7 +19,7 @@ favoriteRouter.route('/')
         .then( (fav) => {
             res.statusCode = 200;
             res.setHeader('Content-type', 'application/json');
-            res.json(fav);
+            res.json(fav[0]);
         }, (err) => next(err))
         .catch( (err) => next(err));  
 })
